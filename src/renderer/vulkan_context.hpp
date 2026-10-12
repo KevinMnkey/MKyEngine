@@ -43,6 +43,7 @@ namespace renderer {
 		VkFormat m_swapChainImageFormat;
 		VkExtent2D m_swapChainExtent;
 		std::vector<VkImageView> m_swapChainImageViews;
+		VkRenderPass m_renderPass = VK_NULL_HANDLE;
 
 		void create_instance();
 		void create_surface(GLFWwindow* windowHandle);
@@ -51,6 +52,8 @@ namespace renderer {
 
 		void create_swap_chain(GLFWwindow* windowHandle);
 		void create_image_views();
+
+		void create_render_pass();
 
 		QueueFamilyIndices find_queue_families(VkPhysicalDevice device);
 		bool is_device_suitable(VkPhysicalDevice device);
