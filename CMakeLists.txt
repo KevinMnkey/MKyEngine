@@ -4,7 +4,17 @@ project(Engine3D CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Descarga automática de GLFW
+# Exporta las rutas de compilación para que el LSP / IDE encuentre los includes
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if(DEFINED ENV{VULKAN_SDK})
+    list(APPEND CMAKE_PREFIX_PATH "$ENV{VULKAN_SDK}")
+endif()
+
+# 1. Buscar el SDK de Vulkan
+find_package(Vulkan REQUIRED)
+
+# 2. Descarga automática de GLFW
 include(FetchContent)
 FetchContent_Declare(
     glfw
@@ -13,8 +23,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw)
 
-# Ejecutable principal
-add_executable(Engine3D src/main.cpp)
+# 3. Ejecutable principal
+add_executable(Engine3D 
+    src/main.cpp 
+    src/core/window.cpp 
+    src/renderer/vulkan_context.cpp
+)
 
-# Enlazamos GLFW y la librería nativa de OpenGL de Windows (opengl32)
-target_link_libraries(Engine3D PRIVATE glfw opengl32)
+# 4. Cabeceras explícitas de Vulkan
+target_include_directories(Engine3D PRIVATE ${Vulkan_INCLUDE_DIRS})
+
+# 5. Enlazamos GLFW y Vulkan
+target_link_libraries(Engine3D PRIVATE 
+    glfw 
+    Vulkan::Vulkan
+)

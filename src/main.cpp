@@ -1,31 +1,22 @@
-#include <GLFW/glfw3.h>
+#include "core/window.hpp"
+#include "renderer/vulkan_context.hpp"
 #include <iostream>
+#include <windows.h>
 
 int main() {
-    if (!glfwInit()) {
-        std::cerr << "Error al inicializar GLFW\n";
-        return -1;
+    // 1. Crear la ventana
+    core::Window window(800, 600, "MNKY_Engine");
+
+    // 2. Inicializar Vulkan
+    renderer::VulkanContext vulkanContext;
+    vulkanContext.init(window.get_native_handle());
+
+    // 3. Bucle del juego
+    while (!window.should_close()) {
+        window.poll_events();
     }
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Motor 3D - Fase 1", NULL, NULL);
-    if (!window) {
-        std::cerr << "Error al crear la ventana\n";
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-
-    // Game Loop
-    while (!glfwWindowShouldClose(window)) {
-        glClearColor(0.1f, 0.1f, 0.12f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    // Al salir del scope, los destructores de `vulkanContext` y `window` 
+    // liberan la memoria automáticamente en el orden correcto.
     return 0;
 }
